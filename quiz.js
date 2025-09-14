@@ -1,117 +1,135 @@
 const questions = [
   {
-    question: "Which is largest animal is the world?",
+    question: "What is the capital of France?",
     answer: [
-      {text: "Shark", correct: false},
-      {text: "Blue Whale", correct: true},
-      {text: "Elephant", correct: false},
-      {text: "Giraffe", correct: false},
+      { text: "Paris", correct: true },
+      { text: "London", correct: false },
+      { text: "Berlin", correct: false },
+      { text: "Madrid", correct: false },
     ]
   },
   {
-    question: "Which is largest desert in the world?",
+    question: "Which planet is known as the Red Planet?",
     answer: [
-      {text: "Kalahari", correct: false},
-      {text: "Gobi", correct: false},
-      {text: "Sahara", correct: false},
-      {text: "Antarctica", correct: true},
+      { text: "Earth", correct: false },
+      { text: "Venus", correct: false },
+      { text: "Mars", correct: true },
+      { text: "Jupiter", correct: false },
     ]
   },
   {
-    question: "Which is the smallest contient in the world",
+    question: "Who wrote the play 'Romeo and Juliet'?",
     answer: [
-      {text: "Asia", correct: false},
-      {text: "Asutralia", correct: true},
-      {text: "Artic", correct: false},
-      {text: "Africa", correct: false},
+      { text: "William Shakespeare", correct: true },
+      { text: "Charles Dickens", correct: false },
+      { text: "Jane Austen", correct: false },
+      { text: "Mark Twain", correct: false },
     ]
   },
-]
+  {
+    question: "Which gas do plants absorb from the atmosphere?",
+    answer: [
+      { text: "Oxygen", correct: false },
+      { text: "Carbon Dioxide", correct: true },
+      { text: "Nitrogen", correct: false },
+      { text: "Hydrogen", correct: false },
+    ]
+  },
+  {
+    question: "What is the boiling point of water at sea level?",
+    answer: [
+      { text: "90°C", correct: false },
+      { text: "100°C", correct: true },
+      { text: "80°C", correct: false },
+      { text: "120°C", correct: false },
+    ]
+  },
+];
 
 
-const questionElemenet = document.getElementById('question');
+// Get elements from the page
+const questionElement = document.getElementById('question');
 const answerButtons = document.getElementById('answer-buttons');
 const nextButton = document.getElementById('next-btn');
 
-
-let currentQuestionIndex = 0;
+let currentQuestion = 0;
 let score = 0;
 
-function startQuiz() {
-  currentQuestionIndex = 0;
-  score = 0; 
-  nextButton.innerHTML = "Next";
-  showQuestion();
-}
-
 function showQuestion() {
-  resetState();
-  let currentQuestion = questions[currentQuestionIndex]
-  let questionNo = currentQuestionIndex + 1;
-  questionElemenet.innerHTML = questionNo + ". " + currentQuestion.question
-  
-  currentQuestion.answer.forEach(answer => {
-    const button = document.createElement("button")
-    button.innerHTML = answer.text
-    button.classList.add("btn");
-    answerButtons.appendChild(button);
-    if(answer.correct){
-      button.dataset.correct = answer.correct
-    }
-    button.addEventListener("click", selectAnswer)
-  })
-}
-
-function resetState() {
+  // Clear old answers
+  answerButtons.innerHTML = "";
   nextButton.style.display = "none";
-  while(answerButtons.firstChild) {
-    answerButtons.removeChild(answerButtons.firstChild)
-  }
-}
 
-function selectAnswer(e) {
-  const selectedBtn = e.target;
-  const isCorrect = selectedBtn.dataset.correct === "true"
-  if(isCorrect){
-    selectedBtn.classList.add("correct")
-    score++
-  }else {
-    selectedBtn.classList.add("incorrect")
-  }
-  Array.from(answerButtons.children).forEach(button => {
-    if(button.dataset.correct === "true") {
-      button.classList.add("correct")
+  let q = questions[currentQuestion];
+  questionElement.innerText = (currentQuestion + 1) + ". " + q.question;
+
+  // Create buttons for each answer
+  q.answer.forEach(ans => {
+    let btn = document.createElement("button");
+    btn.innerText = ans.text;
+    btn.classList.add("btn");
+
+    if (ans.correct) {
+      btn.dataset.correct = "true";
     }
-    button.disabled = true; 
-  })
-  nextButton.style.display = "block"
+
+    btn.addEventListener("click", () => selectAnswer(btn));
+    answerButtons.appendChild(btn);
+  });
 }
 
-function showScore(){
-  resetState();
-  questionElemenet.innerHTML = `You scored ${score} out of ${questions.length}!`;
-  nextButton.innerHTML = "Play Again";
-  nextButton.style.display = 
+function selectAnswer(button) {
+  let correct = button.dataset.correct === "true";
+
+  if (correct) {
+    button.classList.add("correct");
+    score++;
+  } else {
+    button.classList.add("incorrect");
+  }
+
+  // Show correct answer for all
+  Array.from(answerButtons.children).forEach(btn => {
+    if (btn.dataset.correct === "true") {
+      btn.classList.add("correct");
+    }
+    btn.disabled = true;
+  });
+
+  nextButton.style.display = "block";
 }
 
-function handleNextButton() {
-  currentQuestionIndex++
-  if (currentQuestionIndex < questions.length){
+function nextQuestion() {
+  currentQuestion++;
+
+  if (currentQuestion < questions.length) {
     showQuestion();
   } else {
-    showScore()
+    showScore();
   }
+}
+
+function showScore() {
+  questionElement.innerText = `You scored ${score} out of ${questions.length}`;
+  answerButtons.innerHTML = "";
+  nextButton.innerText = "Play Again";
+  nextButton.style.display = "block";
 }
 
 nextButton.addEventListener("click", () => {
-  if(currentQuestionIndex < questions.length){
-    handleNextButton();
-  }else{
-    startQuiz()
+  if (currentQuestion < questions.length) {
+    nextQuestion();
+  } else {
+    // Reset quiz
+    currentQuestion = 0;
+    score = 0;
+    nextButton.innerText = "Next";
+    showQuestion();
   }
-})
+});
 
-startQuiz(); 
+// Start the quiz
+showQuestion();
 
 
 
