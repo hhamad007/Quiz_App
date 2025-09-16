@@ -130,8 +130,3 @@ nextButton.addEventListener("click", () => {
 
 // Start the quiz
 showQuestion();
-
-
-
-
-
